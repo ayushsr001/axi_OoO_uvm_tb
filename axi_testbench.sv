@@ -16,7 +16,7 @@
       logic [7:0] arlen;      // No of transfers per transactions
 
       //Read data channel
-      logic [31:0] rdata;
+      logic [63:0] rdata;
       logic rvalid;
       logic [3:0] rid;
       logic [1:0] rresp;  // OKAY, EXOKAY, SLVERR, DECERR
@@ -33,9 +33,16 @@
       logic [3:0] awid;
 
       //write data channel
+      logic [63:0] wdata;
+      logic wvalid;
+      logic wlast;
+      logic wready;
       
-
       //Write response channel
+      logic [1:0] bresp;
+      logic bvalid;
+      logic bid;
+      logic bready;
 
       //Modports
 
