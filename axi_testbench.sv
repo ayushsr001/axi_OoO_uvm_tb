@@ -152,22 +152,13 @@
 
             `uvm_object_utils_begin(axi_transaction)
                 `uvm_field_enum(txn_type, txn_t, UVM_ALL_ON)
-                `uvm_field_int(arid, UVM_ALL_ON)    
-                `uvm_field_int( arburst, UVM_ALL_ON)
-                `uvm_field_int( arsize, UVM_ALL_ON)
-                `uvm_field_int( arlen, UVM_ALL_ON)
-                `uvm_field_int( rid, UVM_ALL_ON)
-                `uvm_field_int( rresp, UVM_ALL_ON)
-                `uvm_field_int( rlast, UVM_ALL_ON)
-                `uvm_field_int( rrdeady, UVM_ALL_ON)
-                `uvm_field_int( awaddr, UVM_ALL_ON)
-                `uvm_field_int( awsize, UVM_ALL_ON)
-                `uvm_field_int( awlen, UVM_ALL_ON)
-                `uvm_field_int( awburst, UVM_ALL_ON)
-                `uvm_field_int( awid, UVM_ALL_ON)
-                `uvm_field_int( bresp, UVM_ALL_ON)
-                `uvm_field_int( bid, UVM_ALL_ON)
-        `uvm_object_utils_end
+                `uvm_field_int( id, UVM_ALL_ON)    
+                `uvm_field_int( burst, UVM_ALL_ON)
+                `uvm_field_int( size, UVM_ALL_ON)
+                `uvm_field_int( len, UVM_ALL_ON)
+                `uvm_field_int( id, UVM_ALL_ON)
+                `uvm_field_int( resp, UVM_ALL_ON)
+            `uvm_object_utils_end
 
             function void new(string name = "axi_transaction");
               super.new(name);
@@ -177,30 +168,13 @@
             txn_type txn_t;
 
             //Read address channel
-            rand logic [3:0] arid;     
-            rand logic [31:0] araddr;
-            rand logic [1:0] arburst;    //FIXED, INCR, WRAP, 2'b11 -> RESERVED
-            rand logic [2:0] arsize;     //0 -> 1B; 1 -> 2B, 111 -> 128B (MUST NOT EXCEED DATA WIDTH)
-            rand logic [7:0] arlen;      // No of transfers per transactions
-      
-            //Read data channel
-            logic [63:0] rdata;
-            logic [3:0] rid;
-            logic [1:0] rresp;  // OKAY, EXOKAY, SLVERR, DECERR
-      
-            //Write address channel
-            rand logic [31:0] awaddr;
-            rand logic [2:0] awsize;
-            rand logic [7:0] awlen;
-            rand logic [1:0] awburst;
-            rand logic [3:0] awid;
-      
-            //write data channel
-            rand logic [63:0] wdata;
-            
-            //Write response channel
-            logic [1:0] bresp;
-            logic bid;
+            rand logic [3:0] id;     
+            rand logic [31:0] addr;
+            rand logic [1:0] burst;    //FIXED, INCR, WRAP, 2'b11 -> RESERVED
+            rand logic [2:0] size;     //0 -> 1B; 1 -> 2B, 111 -> 128B (MUST NOT EXCEED DATA WIDTH)
+            rand logic [7:0] len;      // No of transfers per transactions
+            logic [63:0] data[$];
+            logic [1:0] resp;          // OKAY, EXOKAY, SLVERR, DECERR
 
             //Constraints - yet to be added
 
