@@ -44,10 +44,66 @@
       logic bid;
       logic bready;
 
-      //Modports
 
+        //add TB signals here
+      endclocking
+
+      //Modports - assuming AXI SLAVE DUT
+      modport DUT (input 
+                   a_clk, a_rstn,
+                   //read addr channel
+                   arvalid, araddr, arid, arsize, arlen, arburst,
+                   //read-response channel
+                   rready,
+                   //write-addr channel
+                   awid, awaddr, awvalid, awsize, awlen, awbusrt,
+                   //write-data channel
+                   wdata, wvalid, wlast,
+                   //write-resp channel
+                   bready,
+                   
+                   output
+                   //read addr channel
+                   arready,
+                   read response channel
+                   rid, rdata, rlast, rvalid, rresp,
+                   //write addr channel
+                   awready,
+                   //write data channel
+                   wready,
+                   //write-resp channel
+                   breasp, bvalid, bid  
+                  );
+
+      //clocking block
+      clocking cb @(posedge clk);
+           output  //read addr channel
+                   arvalid, araddr, arid, arsize, arlen, arburst,
+                   //read-response channel
+                   rready,
+                   //write-addr channel
+                   awid, awaddr, awvalid, awsize, awlen, awbusrt,
+                   //write-data channel
+                   wdata, wvalid, wlast,
+                   //write-resp channel
+                   bready;
+                
+            input  //read addr channel
+                   arready,
+                   read response channel
+                   rid, rdata, rlast, rvalid, rresp,
+                   //write addr channel
+                   awready,
+                   //write data channel
+                   wready,
+                   //write-resp channel
+                   breasp, bvalid, bid;
+      endclocking
+
+      modport TB ( clocking cb, 
+        input a_rstn);
+                   
       //Constraints - Maybe in individual transaction class
-
 
     endinterface : axi_if
 
