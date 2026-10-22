@@ -146,7 +146,7 @@
 
 ///////////////////////// TRANSACTION CLASS /////////////////////////////
 
-          typdef enum {READ_TXN, WRITE_TXN} txn_type;
+          typedef enum {READ_TXN, WRITE_TXN} txn_type;
 
           class axi_transaction extends uvm_sequence_item;
 
@@ -159,7 +159,7 @@
                 `uvm_field_int( resp, UVM_ALL_ON)
             `uvm_object_utils_end
 
-            function void new(string name = "axi_transaction");
+            function new(string name = "axi_transaction");
               super.new(name);
             endfunction : new
 
