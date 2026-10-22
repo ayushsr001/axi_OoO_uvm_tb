@@ -21,7 +21,7 @@
       logic [3:0] rid;
       logic [1:0] rresp;  // OKAY, EXOKAY, SLVERR, DECERR
       logic rlast;
-      logic rrdeady;
+      logic rready;
 
       //Write address channel
       logic [31:0] awaddr;
@@ -41,7 +41,7 @@
       //Write response channel
       logic [1:0] bresp;
       logic bvalid;
-      logic bid;
+      logic [3:0] bid;
       logic bready;
 
 
@@ -145,3 +145,86 @@
     endmodule
 
 ///////////////////////// TRANSACTION CLASS /////////////////////////////
+
+
+          class axi_transaction extends uvm_sequence_item;
+
+            `uvm_object_utils_begin(axi_transaction)
+                `uvm_field_int(arid, UVM_ALL_ON)    
+                `uvm_field_int( araddr, UVM_ALL_ON)
+                `uvm_field_int( arvalid, UVM_ALL_ON)
+                `uvm_field_int( arready, UVM_ALL_ON)
+                `uvm_field_int( arburst, UVM_ALL_ON)
+                `uvm_field_int( arsize, UVM_ALL_ON)
+                `uvm_field_int( arlen, UVM_ALL_ON)
+                `uvm_field_int( rdata, UVM_ALL_ON)
+                `uvm_field_int( rvalid, UVM_ALL_ON)
+                `uvm_field_int( rid, UVM_ALL_ON)
+                `uvm_field_int( rresp, UVM_ALL_ON)
+                `uvm_field_int( rlast, UVM_ALL_ON)
+                `uvm_field_int( rrdeady, UVM_ALL_ON)
+                `uvm_field_int( awaddr, UVM_ALL_ON)
+                `uvm_field_int( awvalid, UVM_ALL_ON)
+                `uvm_field_int( awready, UVM_ALL_ON)
+                `uvm_field_int( awsize, UVM_ALL_ON)
+                `uvm_field_int( awlen, UVM_ALL_ON)
+                `uvm_field_int( awburst, UVM_ALL_ON)
+                `uvm_field_int( awid, UVM_ALL_ON)
+                `uvm_field_int( wdata, UVM_ALL_ON)
+                `uvm_field_int( wvalid, UVM_ALL_ON)
+                `uvm_field_int( wlast, UVM_ALL_ON)
+                `uvm_field_int( wready, UVM_ALL_ON)
+                `uvm_field_int( bresp, UVM_ALL_ON)
+                `uvm_field_int( bvalid, UVM_ALL_ON)
+                `uvm_field_int( bid, UVM_ALL_ON)
+                `uvm_field_int( bready, UVM_ALL_ON)
+        `uvm_object_utils_end
+
+            function void new(string name = "axi_transaction");
+              super.new(name);
+            endfunction : new
+
+            //Read address channel
+            rand logic [3:0] arid;     
+            rand logic [31:0] araddr;
+            rand logic arvalid;
+            logic arready;
+            rand logic [1:0] arburst;    //FIXED, INCR, WRAP, 2'b11 -> RESERVED
+            rand logic [2:0] arsize;     //0 -> 1B; 1 -> 2B, 111 -> 128B (MUST NOT EXCEED DATA WIDTH)
+            rand logic [7:0] arlen;      // No of transfers per transactions
+      
+            //Read data channel
+            logic [63:0] rdata;
+            logic rvalid;
+            logic [3:0] rid;
+            logic [1:0] rresp;  // OKAY, EXOKAY, SLVERR, DECERR
+            logic rlast;
+            rand logic rrdeady;
+      
+            //Write address channel
+            rand logic [31:0] awaddr;
+            rand logic awvalid;
+            logic awready;
+            rand logic [2:0] awsize;
+            rand logic [7:0] awlen;
+            rand logic [1:0] awburst;
+            rand logic [3:0] awid;
+      
+            //write data channel
+            rand logic [63:0] wdata;
+            rand logic wvalid;
+            logic wlast;
+            logic wready;
+            
+            //Write response channel
+            logic [1:0] bresp;
+            logic bvalid;
+            logic bid;
+            rand logic bready;
+
+            //Constraints - yet to be added
+
+          endclass : axi_transaction
+
+            
+              
