@@ -156,7 +156,6 @@
                 `uvm_field_int( burst, UVM_ALL_ON)
                 `uvm_field_int( size, UVM_ALL_ON)
                 `uvm_field_int( len, UVM_ALL_ON)
-                `uvm_field_int( id, UVM_ALL_ON)
                 `uvm_field_int( resp, UVM_ALL_ON)
             `uvm_object_utils_end
 
