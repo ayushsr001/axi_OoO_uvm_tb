@@ -16,7 +16,7 @@
       logic [7:0] arlen;      // No of transfers per transactions
 
       //Read data channel
-      logic [63:0] rdata;
+      logic [DATA_WIDTH-1:0] rdata;
       logic rvalid;
       logic [3:0] rid;
       logic [1:0] rresp;  // OKAY, EXOKAY, SLVERR, DECERR
@@ -33,7 +33,7 @@
       logic [3:0] awid;
 
       //write data channel
-      logic [63:0] wdata;
+      logic [DATA_WIDTH-1:0] wdata;
       logic wvalid;
       logic wlast;
       logic wready;
@@ -163,7 +163,7 @@
             rand bit [1:0] burst;    //FIXED, INCR, WRAP, 2'b11 -> RESERVED
             rand bit [2:0] size;     //0 -> 1B; 1 -> 2B, 111 -> 128B (MUST NOT EXCEED DATA WIDTH)
             rand bit [7:0] len;      // No of transfers per transactions
-            bit [63:0] data[$];
+            bit [DATA_WIDTH-1:0] data[$];
             bit [1:0] resp;          // OKAY, EXOKAY, SLVERR, DECERR
 
             `uvm_object_utils_begin(axi_transaction)
@@ -173,13 +173,46 @@
                 `uvm_field_int( size, UVM_ALL_ON)
                 `uvm_field_int( len, UVM_ALL_ON)
                 `uvm_field_int( resp, UVM_ALL_ON)
+                `uvm_field_int( addr, UVM_ALL_ON)
                 `uvm_field_queue_int( data, UVM_ALL_ON)
             `uvm_object_utils_end
             
             //Constraints - yet to be added
+            constraint axi_data { data.size() == (len + 1);}
+            constraint boundary_4k { addr[7:0] == 0; }
+            constraint burst_c { burst != 2'b11; }
+            constraint size_c { size < $clog2(DATA_WIDTH); }
+            constraint axi_burst_c { if (burst == 2'b01) {(len+1) inside {[1:256]}; }  //INCR
+              else if (burst == 2'b00) { (len+1) inside {[1:16]}; }                    //FIXED
+              else if (burst == 2'b10) { (len+1) inside {2,4,8,16};  };                //WRAP
+                }
             
 
           endclass : axi_transaction
 
+ /////////////////////////// MONITOR ////////////////////////////////////////////
+
+          class axi_m_monitor extends uvm_component;
+
+              `uvm_component_utils("axi_m_monitor")
+  
+              function new (string name = "axi_m_monitor", uvm_component parent);
+                super.new(name, parent);
+              endfunction
+  
+              function void build_phase(uvm_phase phase);
+                super.build_phase(phase);
+                if(!uvm_config_db(#virtual interface axi_if)::get( this, "", "vif", vif))
+                  `uvm_error("[MON] NO-VIF present", UVM_MEDIUM);
+              endfunction : build_phase
+  
+              task run_phase(uvm_phase phase);
+  
+  
+              endtask
+
+            endclass
+
+            
             
               
