@@ -166,6 +166,9 @@
       rand bit [DATA_WIDTH-1:0] data[$];
       bit [1:0] resp;          // OKAY, EXOKAY, SLVERR, DECERR
 
+      rand bit [7:0] beat_size;
+      rand bit [8:0] beat_num;
+
       `uvm_object_utils_begin(axi_transaction)
           `uvm_field_enum(txn_type, txn_t, UVM_ALL_ON)
           `uvm_field_int( id, UVM_ALL_ON)    
@@ -176,15 +179,13 @@
           `uvm_field_int( addr, UVM_ALL_ON)
           `uvm_field_queue_int( data, UVM_ALL_ON)
       `uvm_object_utils_end
-
-      bit [7:0] beat_size = (1 << (size-1));
-      bit beat_num = len + 1;
-      int num_4k = addr/4096;
       
       //Constraints
+      constraint beat_size_c { beat_size = (1 << size); }
+      constraint beat_num_c { beat_num = len + 1; }
       constraint axi_data { txn_t == WRITE_TXN -> data.size() == (beat_num);}
       constraint boundary_4k { addr[7:0] == 0;  
-                              (addr + beat_num * beat_size)/4096 == num_4k;    //next address within the same 4k boundary
+                              (addr + beat_num * beat_size)/4096 == addr/4096;    //next address within the same 4k boundary
                               (33'b0 + addr + beat_num * beat_size) % beat_size == 0;  //end addr 4k aligned
                              }
       constraint burst_c { burst != 2'b11; }
