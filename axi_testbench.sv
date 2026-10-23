@@ -179,10 +179,14 @@
 
       bit [7:0] beat_size = (1 << (size-1));
       bit beat_num = len + 1;
+      int num_4k = addr/4096;
       
       //Constraints
       constraint axi_data { data.size() == (beat_num);}
-      constraint boundary_4k { addr[7:0] == 0; }
+      constraint boundary_4k { addr[7:0] == 0;  
+                              (addr + beat_num * beat_size)/4096 == num_4k;    //next address within the same 4k boundary
+                              (addr + beat_num * beat_size) % beat_size == 0;  //end addr 4k aligned
+                             }
       constraint burst_c { burst != 2'b11; }
       constraint size_c { size < $clog2(DATA_WIDTH); }
       constraint axi_burst_c { 
