@@ -194,13 +194,13 @@
       constraint axi_burst_c { 
         if (burst == 2'b01)                      //INCR
         {(beat_num) inside {[1:256]};            //1 to 256 beats
-         if( (addr % beat_size) == 0)  addr[size : 0] == 0;          //address already aligned wrt size 
+         if( (addr % beat_size) == 0)  addr[clog2(beat_size) : 0] == 0;          //address already aligned wrt size 
          else (addr + beat_size - (addr % beat_size)) == 0;          //when start addr is unaligned and next addr must be aligned
               }  
         else if (burst == 2'b00) { (beat_num) inside {[1:16]}; }     //FIXED
         else if (burst == 2'b10) 
         { (beat_num) inside {2,4,8,16};        //WRAP
-         addr[size : 0] == 0;                  //address aligned wrt size 
+         addr[ clog2(beat_size) : 0] == 0;                  //address aligned wrt size 
           };                
         }
       
