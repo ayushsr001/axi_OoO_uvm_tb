@@ -150,6 +150,22 @@
 
           class axi_transaction extends uvm_sequence_item;
 
+            function new(string name = "axi_transaction");
+              super.new(name);
+            endfunction : new
+
+            //txn type
+            rand txn_type txn_t;
+
+            //Read address channel
+            rand bit [3:0] id;     
+            rand bit [31:0] addr;
+            rand bit [1:0] burst;    //FIXED, INCR, WRAP, 2'b11 -> RESERVED
+            rand bit [2:0] size;     //0 -> 1B; 1 -> 2B, 111 -> 128B (MUST NOT EXCEED DATA WIDTH)
+            rand bit [7:0] len;      // No of transfers per transactions
+            bit [63:0] data[$];
+            bit [1:0] resp;          // OKAY, EXOKAY, SLVERR, DECERR
+
             `uvm_object_utils_begin(axi_transaction)
                 `uvm_field_enum(txn_type, txn_t, UVM_ALL_ON)
                 `uvm_field_int( id, UVM_ALL_ON)    
@@ -157,25 +173,11 @@
                 `uvm_field_int( size, UVM_ALL_ON)
                 `uvm_field_int( len, UVM_ALL_ON)
                 `uvm_field_int( resp, UVM_ALL_ON)
+                `uvm_field_queue_int( data, UVM_ALL_ON)
             `uvm_object_utils_end
-
-            function new(string name = "axi_transaction");
-              super.new(name);
-            endfunction : new
-
-            //txn type
-            txn_type txn_t;
-
-            //Read address channel
-            rand logic [3:0] id;     
-            rand logic [31:0] addr;
-            rand logic [1:0] burst;    //FIXED, INCR, WRAP, 2'b11 -> RESERVED
-            rand logic [2:0] size;     //0 -> 1B; 1 -> 2B, 111 -> 128B (MUST NOT EXCEED DATA WIDTH)
-            rand logic [7:0] len;      // No of transfers per transactions
-            logic [63:0] data[$];
-            logic [1:0] resp;          // OKAY, EXOKAY, SLVERR, DECERR
-
+            
             //Constraints - yet to be added
+            
 
           endclass : axi_transaction
 
