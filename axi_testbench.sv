@@ -185,8 +185,9 @@
       constraint beat_num_c { beat_num == len + 9'd1; }
       constraint axi_data { txn_t == WRITE_TXN -> data.size() == (beat_num);}
       constraint boundary_4k {
-        (33'b0 + addr + (beat_num - 1) * beat_size)/4096 == addr/4096;            //next address within the same 4k boundary
-        (33'b0 + addr + (beat_num - 1) * beat_size) % beat_size == 0;     //end addr 4k aligned
+        //(33'b0 + addr + (beat_num - 1) * beat_size)/4096 == addr/4096;            //next address within the same 4k boundary
+        (addr + (beat_num - 1) * beat_size)[31:12] == addr [31:12];                 //next address within the same 4k boundary
+        (33'b0 + addr + (beat_num - 1) * beat_size + (beat_size - addr % beat_size) ) % beat_size == 0;               //end addr 4k aligned
                              }
       constraint burst_c { burst != 2'b11; }
       constraint size_c { size <= $clog2(DATA_WIDTH); }
