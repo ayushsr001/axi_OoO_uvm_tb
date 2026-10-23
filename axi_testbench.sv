@@ -167,7 +167,7 @@
       bit [1:0] resp;          // OKAY, EXOKAY, SLVERR, DECERR
 
       rand bit [7:0] beat_size;
-      rand bit [8:0] beat_num;
+      rand bit [9:0] beat_num;
 
       `uvm_object_utils_begin(axi_transaction)
           `uvm_field_enum(txn_type, txn_t, UVM_ALL_ON)
@@ -181,25 +181,25 @@
       `uvm_object_utils_end
       
       //Constraints
-      constraint beat_size_c { beat_size = (1 << size); }
-      constraint beat_num_c { beat_num = len + 1; }
+      constraint beat_size_c { beat_size == (1 << size); }
+      constraint beat_num_c { beat_num == len + 1; }
       constraint axi_data { txn_t == WRITE_TXN -> data.size() == (beat_num);}
-      constraint boundary_4k { addr[7:0] == 0;  
-                              (addr + beat_num * beat_size)/4096 == addr/4096;    //next address within the same 4k boundary
-                              (33'b0 + addr + beat_num * beat_size) % beat_size == 0;  //end addr 4k aligned
+      constraint boundary_4k {
+        (addr + (beat_num - 1) * beat_size)/4096 == addr/4096;            //next address within the same 4k boundary
+        (33'b0 + addr + (beat_num - 1) * beat_size) % beat_size == 0;     //end addr 4k aligned
                              }
       constraint burst_c { burst != 2'b11; }
-      constraint size_c { size < $clog2(DATA_WIDTH); }
+      constraint size_c { size <= $clog2(DATA_WIDTH); }
       constraint axi_burst_c { 
         if (burst == 2'b01)                      //INCR
         {(beat_num) inside {[1:256]};            //1 to 256 beats
-         if( (addr % beat_size) == 0)  addr[size-1 : 0] == 0;        //address already aligned wrt size 
+         if( (addr % beat_size) == 0)  addr[size : 0] == 0;          //address already aligned wrt size 
          else (addr + beat_size - (addr % beat_size)) == 0;          //when start addr is unaligned and next addr must be aligned
               }  
         else if (burst == 2'b00) { (beat_num) inside {[1:16]}; }     //FIXED
         else if (burst == 2'b10) 
         { (beat_num) inside {2,4,8,16};        //WRAP
-          addr[size-1 : 0] == 0;               //address aligned wrt size 
+         addr[size : 0] == 0;                  //address aligned wrt size 
           };                
         }
       
