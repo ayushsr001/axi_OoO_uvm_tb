@@ -176,18 +176,28 @@
           `uvm_field_int( addr, UVM_ALL_ON)
           `uvm_field_queue_int( data, UVM_ALL_ON)
       `uvm_object_utils_end
+
+      bit [7:0] beat_size = (1 << (size-1));
+      bit beat_num = len + 1;
       
-      //Constraints - yet to be added
-      constraint axi_data { data.size() == (len + 1);}
+      //Constraints
+      constraint axi_data { data.size() == (beat_num);}
       constraint boundary_4k { addr[7:0] == 0; }
       constraint burst_c { burst != 2'b11; }
       constraint size_c { size < $clog2(DATA_WIDTH); }
-      constraint axi_burst_c { if (burst == 2'b01) {(len+1) inside {[1:256]}; }  //INCR
-        else if (burst == 2'b00) { (len+1) inside {[1:16]}; }                    //FIXED
-        else if (burst == 2'b10) { (len+1) inside {2,4,8,16};  };                //WRAP
-          }
+      constraint axi_burst_c { 
+        if (burst == 2'b01)                      //INCR
+        {(beat_num) inside {[1:256]};            //1 to 256 beats
+         if( (addr % beat_size) == 0)  addr[size-1 : 0] == 0;        //address already aligned wrt size 
+         else (addr + beat_size - (addr % beat_size)) == 0;          //when start addr is unaligned and next addr must be aligned
+              }  
+        else if (burst == 2'b00) { (beat_num) inside {[1:16]}; }     //FIXED
+        else if (burst == 2'b10) 
+        { (beat_num) inside {2,4,8,16};        //WRAP
+          addr[size-1 : 0] == 0;               //address aligned wrt size 
+          };                
+        }
       
-
     endclass : axi_transaction
 
  /////////////////////////// MONITOR ////////////////////////////////////////////
@@ -207,8 +217,7 @@
       endfunction : build_phase
 
       task run_phase(uvm_phase phase);
-
-
+        
       endtask
 
   endclass
